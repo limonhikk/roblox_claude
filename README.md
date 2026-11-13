@@ -1,37 +1,39 @@
 # Roblox Neo-Retro Maps — Claude Code Skill
 
-Скилл **`roblox-neoretro-maps`** для **Claude Code**, который обучает Claude проектировать и собирать детализированные карты Roblox в стиле **Neo-Retro** (*Regretevator*, *Combat Initiation*, *Forsaken*) через **Roblox Studio MCP** или **`.rbxmx` XML**.
+**English** | [Русский](README.ru.md)
 
-Основной фокус — скоростные горные спуски на автомобилях с множеством препятствий для столкновений: бесшовная физика наклонов, 3-слойная детализация, дисциплина стадов/поверхностей (`Studs` / `Inlet` / `Smooth`), палитры `BrickColor`, пресеты `Lighting` и модульные Luau-билдеры.
+A **Claude Code** skill (`roblox-neoretro-maps`) that teaches Claude how to design and build detailed Roblox maps in the **Neo-Retro** aesthetic (*Regretevator*, *Combat Initiation*, *Forsaken*) via **Roblox Studio MCP** or **`.rbxmx` XML**.
+
+Focused on high-speed downhill mountain car-crash / demolition obstacle maps: physics-safe sloped road chaining, 3-layer silhouette detailing, `Studs` / `Inlet` / `Smooth` surface discipline, classic `BrickColor` palettes, `Lighting` presets, and modular Luau builders.
 
 ---
 
-## Структура скилла
+## Skill Structure
 
 ```text
 .claude/skills/roblox-neoretro-maps/
-├── SKILL.md                                  # Основные правила, пайплайн MCP и триггеры
+├── SKILL.md                                  # Core rules, MCP workflow, and trigger metadata
 ├── references/
-│   ├── neoretro-style-bible.md               # Анти-retroslop, SurfaceType, BrickColor, Lighting
-│   ├── downhill-crash-engineering.md         # Математика CFrame для уклонов, зоны, теги препятствий
-│   └── mcp-and-rbxmx-spec.md                 # Работа через Studio MCP и XML-токены .rbxmx
+│   ├── neoretro-style-bible.md               # Anti-retroslop rules, SurfaceType, BrickColor, Lighting
+│   ├── downhill-crash-engineering.md         # Slope CFrame math, vertical zones, obstacle tags
+│   └── mcp-and-rbxmx-spec.md                 # Studio MCP patterns and .rbxmx XML enum tokens
 └── templates/
-    └── luau-builders.lua                     # Готовые Luau-функции генерации дороги, рамп и пропов
+    └── luau-builders.lua                     # Ready-to-use Luau builders for roads, ramps, and props
 ```
 
 ---
 
-## Быстрая установка
+## Quick Installation
 
-### Способ 1: Через `npx skills` (рекомендуемый)
+### Option 1: Via `npx skills` (Recommended)
 
-Установить **глобально** (скилл будет доступен во всех ваших проектах Claude Code):
+Install **globally** (available across all your Claude Code projects):
 
 ```bash
 npx skills add limonhikk/roblox_claude --skill roblox-neoretro-maps -g
 ```
 
-Установить **только в текущий проект** (выполнять в корне вашего Roblox-проекта):
+Install **into the current project only** (run inside your Roblox project root):
 
 ```bash
 npx skills add limonhikk/roblox_claude --skill roblox-neoretro-maps
@@ -39,28 +41,28 @@ npx skills add limonhikk/roblox_claude --skill roblox-neoretro-maps
 
 ---
 
-### Способ 2: Через `npx degit` (скачивает только папку скилла без `.git`)
+### Option 2: Via `npx degit` (Downloads only the skill folder, no `.git`)
 
-**Глобально — Windows (PowerShell):**
+**Global — Windows (PowerShell):**
 ```powershell
 npx degit limonhikk/roblox_claude/.claude/skills/roblox-neoretro-maps "$env:USERPROFILE\.claude\skills\roblox-neoretro-maps"
 ```
 
-**Глобально — macOS / Linux / Git Bash:**
+**Global — macOS / Linux / Git Bash:**
 ```bash
 npx degit limonhikk/roblox_claude/.claude/skills/roblox-neoretro-maps ~/.claude/skills/roblox-neoretro-maps
 ```
 
-**В текущий проект:**
+**Current project only:**
 ```bash
 npx degit limonhikk/roblox_claude/.claude/skills/roblox-neoretro-maps .claude/skills/roblox-neoretro-maps
 ```
 
 ---
 
-### Способ 3: Чистый `git` (`sparse-checkout`, без Node.js)
+### Option 3: Pure `git` (`sparse-checkout`, no Node.js required)
 
-Выкачивает из репозитория только папку `.claude/skills/roblox-neoretro-maps`:
+Fetches only `.claude/skills/roblox-neoretro-maps` from the repository:
 
 **Windows (PowerShell):**
 ```powershell
@@ -83,29 +85,29 @@ rm -rf _tmp_skill
 
 ---
 
-## Проверка и использование в Claude Code
+## Verification & Usage in Claude Code
 
-1. Откройте ваш Roblox-проект и запустите `claude`.
-2. Убедитесь, что **Roblox Studio** открыта, а **Roblox Studio MCP** подключен (`/mcp` в Claude Code).
-3. Введите `/` — в списке команд должен появиться `/roblox-neoretro-maps`.
+1. Open your Roblox project and run `claude`.
+2. Make sure **Roblox Studio** is open and **Roblox Studio MCP** is connected (`/mcp` inside Claude Code).
+3. Type `/` — `/roblox-neoretro-maps` should appear in the command list.
 
-### Рекомендуемый пошаговый пайплайн генерации карты
+### Recommended 4-Pass Generation Workflow
 
-Чтобы карта получилась максимально детализированной, собирайте её в 4 прохода:
+For maximum detail and clean physics, build maps in 4 sequential passes:
 
-1. **Свет и основа трассы:**
+1. **Lighting & Road Spine:**
    ```text
-   /roblox-neoretro-maps Примени пресет Lighting Daylight, создай структуру Workspace.Map и построй бесшовную трассу спуска от Y=650 до Y=0 шириной 64 studs с отбойниками и разметкой.
+   /roblox-neoretro-maps Apply the Daylight Lighting preset, create Workspace.Map, and build a seamless 64-stud-wide downhill road from Y=650 to Y=0 with guardrails and dashed lane markings.
    ```
-2. **Горный рельеф и архитектура:**
+2. **Mountain Terrain & Architecture:**
    ```text
-   Добавь вокруг трассы ступенчатые нео-ретро скалы без Smooth Terrain, ретро-сосны, ферменные мосты из TrussPart, туннель в Zone2 и наддорожные арки.
+   Add stepped Neo-Retro terraced cliffs (no Smooth Terrain), retro pine trees, TrussPart bridges, a neon-lit tunnel in Zone2, and overhead gantries along the descent.
    ```
-3. **Препятствия и геймплей:**
+3. **Obstacles & Gameplay Zones:**
    ```text
-   Наполни трассу препятствиями каждые 50–70 studs: разрушаемые кирпичные стены, взрывные бочки со WeldConstraint, трамплины с неоновыми стрелками и буст-пады с тегами CollectionService.
+   Populate the road every 50–70 studs with obstacles: breakable brick walls, welded explosive barrels, neon-trimmed ramps, and boost pads with CollectionService tags.
    ```
-4. **Финишная арена и аудит:**
+4. **Crash Bowl & Physics Audit:**
    ```text
-   На Y=0 построй Crash Bowl арену со стеной-мишенью и триггером FinishZone, затем проверь стыки дороги на отсутствие порогов.
+   Build the Crash Bowl arena at Y=0 with a giant target wall and FinishZone trigger, then verify all road joints have zero upward seam lips.
    ```
